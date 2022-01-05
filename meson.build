@@ -326,6 +326,20 @@ mod17_inc = inc + stm32f405_inc + ['platform/targets/Module17']
 mod17_def = def + stm32f405_def + {'PLATFORM_MOD17': ''}
 
 ##
+## Ailunce HD-1
+##
+hd1_src = src + mk22fn512_src + ['platform/targets/HD-1/platform.c',
+                                 'platform/drivers/NVM/nvmem_HD1.c',
+                                 'platform/drivers/baseband/radio_HD1.cpp',
+                                 'platform/drivers/display/display_HD1.c',
+                                 'platform/drivers/keyboard/keyboard_HD1.c',
+                                 'platform/drivers/audio/audio_HD1.c',
+                                 'platform/drivers/audio/inputStream_HD1.c']
+
+hd1_inc = inc + mk22fn512_inc + ['platform/targets/HD-1']
+hd1_def = def + mk22fn512_def + {'PLATFORM_HD1': ''}
+
+##
 ## -------------------------- Compilation arguments ----------------------------
 ##
 
@@ -406,6 +420,15 @@ foreach k, v : mod17_def
   endif
 endforeach
 
+hd1_args = []
+foreach k, v : hd1_def
+  if v == ''
+    hd1_args += '-D@0@'.format(k)
+  else
+    hd1_args += '-D@0@=@1@'.format(k, v)
+  endif
+endforeach
+
 linux_opts = {'sources': linux_src,
               'c_args': linux_c_args,
               'cpp_args' : linux_cpp_args,
@@ -461,6 +484,14 @@ mod17_opts  = {'sources': mod17_src,
                'dependencies': [codec2_dep],
                'include_directories': mod17_inc}
 
+hd1_opts    = {'sources': hd1_src,
+               'c_args': hd1_args,
+               'cpp_args': hd1_args,
+               'link_args' : ['-Wl,-T../platform/mcu/MK22FN512xxx12/linker_script.ld',
+                              '-Wl,--print-memory-usage'],
+               'dependencies': [codec2_dep],
+               'include_directories': hd1_inc}
+
 ##
 ## ---------------------------- Compilation targets ----------------------------
 ##
@@ -506,6 +537,12 @@ targets = [
    'flashable': true,
    'wrap': ' ',
    'load_addr': ' '},
+
+   {'name': 'hd1',
+   'opts': hd1_opts,
+   'flashable': true,
+   'wrap': 'UV3X0',
+   'load_addr': '0x0800C000'},
   ]
 
 radio_tool  = find_program('radio_tool')
