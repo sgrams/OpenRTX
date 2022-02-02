@@ -21,6 +21,7 @@
 #include <interfaces/platform.h>
 #include <interfaces/gpio.h>
 #include <stddef.h>
+#include <UART0.h>
 #include "hwconfig.h"
 
 void platform_init()
@@ -28,12 +29,23 @@ void platform_init()
     /* Configure GPIOs */
     gpio_setMode(GREEN_LED, OUTPUT);
     gpio_setMode(RED_LED,   OUTPUT);
+
+    /*
+     * Initialise UART0 driver
+     */
+    gpio_setMode(UART_RX, INPUT);
+    gpio_setMode(UART_TX, OUTPUT);
+    gpio_setAlternateFunction(UART_RX, 0);
+    gpio_setAlternateFunction(UART_TX, 0);
+    uart0_init(115200);
 }
 
 void platform_terminate()
 {
     gpio_clearPin(RED_LED);
     gpio_clearPin(GREEN_LED);
+
+    uart0_terminate();
 }
 
 uint16_t platform_getVbat()

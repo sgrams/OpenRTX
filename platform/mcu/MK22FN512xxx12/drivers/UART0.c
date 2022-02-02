@@ -18,27 +18,48 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>   *
  ***************************************************************************/
 
-#ifndef HWCONFIG_H
-#define HWCONFIG_H
+#include <hwconfig.h>
+#include "UART0.h"
 
-#include "MK22F51212.h"
+#define BUS_CLOCK 59904000  /* Bus clock, 59.904MHz */
 
-/* Screen dimensions */
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
+void uart0_init(unsigned int baudrate)
+{
+    SIM->SCGC4 |= SIM_SCGC4_UART0(1);
 
-/* Screen pixel format */
-#define PIX_FMT_BW
+    const unsigned int quot = (2*BUS_CLOCK)/baudrate;
+    unsigned int ratio      = quot/2 + (quot & 1);
 
-/* Battery type */
-#define BAT_LIPO_2S
+    UART0->BDH = ratio >> 8;
+    UART0->BDL = ratio & 0xFF;
 
-/* Signalling LEDs */
-#define GREEN_LED  GPIOB,18
-#define RED_LED    GPIOB,19
+    UART0->C2  = UART_C2_TE(1);  /* Enable transmission */
+}
 
-/* Serial port, UART0 */
-#define UART_RX  GPIOA,1
-#define UART_TX  GPIOA,2
+void uart0_terminate()
+{
+    SIM->SCGC4 &= ~SIM_SCGC4_UART0(1);
+}
 
-#endif
+ssize_t uart0_readBlock(void *buffer, size_t size, off_t where)
+{
+    (void) buffer;
+    (void) size;
+    (void) where;
+
+    return 0;
+}
+
+ssize_t uart0_writeBlock(void *buffer, size_t size, off_t where)
+{
+    (void) where;
+
+    const char *buf = ((const char*) buffer);
+    for(size_t i = 0; i < size; i++)
+    {
+        while((UART0->S1 & UART_S1_TDRE_MASK) == 0) ;
+        UART0->D = *buf++;
+    }
+
+    return size;
+}

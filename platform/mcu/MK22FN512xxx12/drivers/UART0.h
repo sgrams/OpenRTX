@@ -18,27 +18,54 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>   *
  ***************************************************************************/
 
-#ifndef HWCONFIG_H
-#define HWCONFIG_H
+#ifndef UART0_H
+#define UART0_H
 
-#include "MK22F51212.h"
+#include <sys/types.h>
+#include <stdint.h>
+#include <stddef.h>
 
-/* Screen dimensions */
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-
-/* Screen pixel format */
-#define PIX_FMT_BW
-
-/* Battery type */
-#define BAT_LIPO_2S
-
-/* Signalling LEDs */
-#define GREEN_LED  GPIOB,18
-#define RED_LED    GPIOB,19
-
-/* Serial port, UART0 */
-#define UART_RX  GPIOA,1
-#define UART_TX  GPIOA,2
-
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+/**
+ * Initialise UART0 peripheral with a given baud rate. Serial communication is
+ * configured for 8 data bits, no parity, one stop bit.
+ *
+ * @param baudrate: serial port baud rate, in bits per second.
+ */
+void uart0_init(unsigned int baudrate);
+
+/**
+ * Shut down UART0 peripheral.
+ */
+void uart0_terminate();
+
+/**
+ * Read a block of data.
+ *
+ * \param buffer buffer where read data will be stored.
+ * \param size buffer size.
+ * \param where where to read from.
+ * \return number of bytes read or a negative number on failure. Note that
+ * it is normal for this function to return less character than the amount
+ * asked.
+ */
+ssize_t uart0_readBlock(void *buffer, size_t size, off_t where);
+
+/**
+ * Write a block of data.
+ *
+ * \param buffer buffer where take data to write.
+ * \param size buffer size.
+ * \param where where to write to.
+ * \return number of bytes written or a negative number on failure.
+ */
+ssize_t uart0_writeBlock(void *buffer, size_t size, off_t where);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* UART0_H */
