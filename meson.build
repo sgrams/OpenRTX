@@ -585,7 +585,7 @@ foreach t : targets
       custom_target(name+'_flash',
         input : bin,
         output : name+'_flash',
-        command : [radio_tool, '-d', '0', '-P', '/dev/ttyUSB0', '-f', '-i', '@INPUT@'])
+        command : [radio_tool, '-d', '0', '-f', '-i', '@INPUT@'])
 
     # Module17 also uses dfu-tool for flashing
     elif name == 'openrtx_mod17'

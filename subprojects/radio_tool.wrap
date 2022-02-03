@@ -1,6 +1,6 @@
 [wrap-git]
 url = https://github.com/v0l/radio_tool
-revision = 58ff5701466a6dc651e0d04778c4abec780f4643
+revision = 9bcad64132b91c2ca70cc06f63d1d8bd6535f3a8
 patch_directory = radio_tool
 
 [provide]
