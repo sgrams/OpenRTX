@@ -18,7 +18,6 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>   *
  ***************************************************************************/
 
-#include <os.h>
 #include <stdio.h>
 #include <interfaces/platform.h>
 
@@ -28,9 +27,8 @@ int main()
 
     while(1)
     {
-        OS_ERR err;
         printf("Hello world\n");
-        OSTimeDlyHMSM(0u, 0u, 1u, 0u, OS_OPT_TIME_HMSM_STRICT, &err);
+        sleepFor(0, 100);
     }
 
     return 0;
