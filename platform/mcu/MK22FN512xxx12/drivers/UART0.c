@@ -21,15 +21,29 @@
 #include <hwconfig.h>
 #include "UART0.h"
 
-#define BUS_CLOCK 59904000  /* Bus clock, 59.904MHz */
-
 void uart0_init(unsigned int baudrate)
 {
     SIM->SCGC4 |= SIM_SCGC4_UART0(1);
 
-    const unsigned int quot = (2*BUS_CLOCK)/baudrate;
-    unsigned int ratio      = quot/2 + (quot & 1);
+    /*
+     * Port baud rate is set using a 13-bit counter with 5-bit fractional part
+     * for fine tuning. From reference manual we have that equation for baud
+     * rate is: baud = clk/(16*(SBR[12:0] + BRFD)).
+     *
+     * UART0 uses as input clock source the core clock, running at 119.808MHz.
+     * Values for SBR and BRFD can be easily calculated using 13.5 fixed point
+     * math.
+     *
+     * See also K22F Sub-Family Reference Manual at page 1279.
+     */
 
+    uint32_t ratio = (119808000 << 5) / (16 * baudrate);
+
+    /* Set fractional part */
+    UART0->C4 = ratio & 0x1F;
+
+    /* Discard fraction and set integer part */
+    ratio >>= 5;
     UART0->BDH = ratio >> 8;
     UART0->BDL = ratio & 0xFF;
 
