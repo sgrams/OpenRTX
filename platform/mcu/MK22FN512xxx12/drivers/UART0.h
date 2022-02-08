@@ -47,22 +47,20 @@ void uart0_terminate();
  *
  * \param buffer buffer where read data will be stored.
  * \param size buffer size.
- * \param where where to read from.
  * \return number of bytes read or a negative number on failure. Note that
  * it is normal for this function to return less character than the amount
  * asked.
  */
-ssize_t uart0_readBlock(void *buffer, size_t size, off_t where);
+ssize_t uart0_readBlock(void *buffer, const size_t size);
 
 /**
  * Write a block of data.
  *
  * \param buffer buffer where take data to write.
  * \param size buffer size.
- * \param where where to write to.
  * \return number of bytes written or a negative number on failure.
  */
-ssize_t uart0_writeBlock(void *buffer, size_t size, off_t where);
+ssize_t uart0_writeBlock(const void *buffer, const size_t size);
 
 #ifdef __cplusplus
 }

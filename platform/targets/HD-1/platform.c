@@ -29,15 +29,6 @@ void platform_init()
     /* Configure GPIOs */
     gpio_setMode(GREEN_LED, OUTPUT);
     gpio_setMode(RED_LED,   OUTPUT);
-
-    /*
-     * Initialise UART0 driver
-     */
-    gpio_setMode(UART_RX, INPUT);
-    gpio_setMode(UART_TX, OUTPUT);
-    gpio_setAlternateFunction(UART_RX, 0);
-    gpio_setAlternateFunction(UART_TX, 0);
-    uart0_init(115200);
 }
 
 void platform_terminate()

@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <stdio.h>
+#include <interfaces/delays.h>
 #include <interfaces/platform.h>
 
 int main()
@@ -27,7 +28,7 @@ int main()
 
     while(1)
     {
-        printf("Hello world\n");
+        printf("Hello world\r\n");
         sleepFor(0, 100);
     }
 

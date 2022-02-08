@@ -24,12 +24,12 @@
 * Board support package, this file initializes hardware.
 ************************************************************************/
 
+#include <interfaces/gpio.h>
 #include <interfaces/bsp.h>
 #include <kernel/kernel.h>
 #include <kernel/sync.h>
 #include <hwconfig.h>
-
-#include <interfaces/gpio.h>
+#include <UART0.h>
 
 namespace miosix
 {
@@ -45,7 +45,14 @@ void IRQbspInit()
 
 void bspInit2()
 {
-
+    #ifdef PLATFORM_HD1
+    // Initialise UART0 driver for stdio redirection
+    gpio_setMode(UART_RX, INPUT);
+    gpio_setMode(UART_TX, OUTPUT);
+    gpio_setAlternateFunction(UART_RX, 0);
+    gpio_setAlternateFunction(UART_TX, 0);
+    uart0_init(115200);
+    #endif
 }
 
 //

@@ -55,19 +55,16 @@ void uart0_terminate()
     SIM->SCGC4 &= ~SIM_SCGC4_UART0(1);
 }
 
-ssize_t uart0_readBlock(void *buffer, size_t size, off_t where)
+ssize_t uart0_readBlock(void *buffer, const size_t size)
 {
     (void) buffer;
     (void) size;
-    (void) where;
 
     return 0;
 }
 
-ssize_t uart0_writeBlock(void *buffer, size_t size, off_t where)
+ssize_t uart0_writeBlock(const void *buffer, const size_t size)
 {
-    (void) where;
-
     const char *buf = ((const char*) buffer);
     for(size_t i = 0; i < size; i++)
     {

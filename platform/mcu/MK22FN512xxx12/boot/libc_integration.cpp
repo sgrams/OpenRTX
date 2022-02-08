@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <reent.h>
+#include <UART0.h>
 #include <usb_vcom.h>
 #include <filesystem/file_access.h>
 
@@ -34,7 +35,11 @@ int _write_r(struct _reent *ptr, int fd, const void *buf, size_t cnt)
 {
     if(fd == STDOUT_FILENO || fd == STDERR_FILENO)
     {
+        #ifdef PLATFORM_HD1
+        return uart0_writeBlock(buf, cnt);
+        #else
         return vcom_writeBlock(buf, cnt);
+        #endif
     }
 
     /* If fd is not stdout or stderr */
@@ -54,12 +59,18 @@ int _read_r(struct _reent *ptr, int fd, void *buf, size_t cnt)
     {
         for(;;)
         {
+            #ifdef PLATFORM_HD1
+            ptr->_errno = ENODEV;
+            ret = -1;
+            break;
+            #else
             ssize_t r = vcom_readBlock(buf, cnt);
             if((r < 0) || (r == ((ssize_t) cnt)))
             {
                 ret = ((int) r);
                 break;
             }
+            #endif
         }
     }
     else
