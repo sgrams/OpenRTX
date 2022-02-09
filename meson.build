@@ -331,6 +331,7 @@ mod17_def = def + stm32f405_def + {'PLATFORM_MOD17': ''}
 ##
 hd1_src = src + mk22fn512_src + ['platform/targets/HD-1/platform.c',
                                  'platform/drivers/NVM/nvmem_HD1.c',
+                                 'platform/drivers/backlight/backlight_HD1.c',
                                  'platform/drivers/baseband/radio_HD1.cpp',
                                  'platform/drivers/display/display_HD1.c',
                                  'platform/drivers/keyboard/keyboard_HD1.c',

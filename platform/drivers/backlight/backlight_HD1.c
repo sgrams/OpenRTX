@@ -18,56 +18,40 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>   *
  ***************************************************************************/
 
-#ifndef HWCONFIG_H
-#define HWCONFIG_H
+#include <interfaces/platform.h>
+#include <interfaces/gpio.h>
+#include <hwconfig.h>
+#include "backlight.h"
 
-#include "MK22F51212.h"
+void backlight_init()
+{
+    /*
+     * Configure backlight PWM: 14.6kHz, 8 bit resolution
+     */
+    SIM->SCGC6 |= SIM_SCGC6_FTM1(1);           /* Enable clock                     */
 
-/* Screen dimensions */
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
+    FTM1->CONTROLS[1].CnSC = FTM_CnSC_MSB(1)
+                           | FTM_CnSC_ELSB(1); /* Edge-aligned PWM, clear on match */
+    FTM1->CONTROLS[1].CnV  = 0;
 
-/* Screen pixel format */
-#define PIX_FMT_BW
+    FTM1->MOD  = 0xFF;                         /* Reload value                     */
+    FTM1->SC   = FTM_SC_PS(5)                  /* Prescaler divide by 32           */
+               | FTM_SC_CLKS(1);               /* Enable timer                     */
 
-/* Battery type */
-#define BAT_LIPO_2S
+    gpio_setMode(LCD_BKLIGHT, OUTPUT);
+    gpio_setAlternateFunction(LCD_BKLIGHT, 1);
+}
 
-/* Serial port, UART0 */
-#define UART_RX  GPIOA,1
-#define UART_TX  GPIOA,2
+void backlight_terminate()
+{
+    gpio_clearPin(LCD_BKLIGHT);
+    SIM->SCGC6 &= ~SIM_SCGC6_FTM1(1);
+}
 
-/* Display */
-#define LCD_D0      GPIOD,0
-#define LCD_D1      GPIOD,1
-#define LCD_D2      GPIOD,2
-#define LCD_D3      GPIOD,3
-#define LCD_D4      GPIOD,4
-#define LCD_D5      GPIOD,5
-#define LCD_D6      GPIOD,6
-#define LCD_D7      GPIOD,7
-#define LCD_RD      GPIOC,14
-#define LCD_RS      GPIOC,13
-#define LCD_RST     GPIOC,12
-#define LCD_WR      GPIOC,11
-#define LCD_CS      GPIOC,10
-#define LCD_BKLIGHT GPIOB,1
-
-/* Signalling LEDs */
-#define GREEN_LED  GPIOB,18
-#define RED_LED    GPIOB,19
-
-/* Keyboard */
-#define KB_ROW0 LCD_D4
-#define KB_ROW1 LCD_D5
-#define KB_ROW2 LCD_D6
-#define KB_ROW3 LCD_D7
-
-#define KB_COL0 LCD_D0
-#define KB_COL1 LCD_D1
-#define KB_COL2 LCD_D2
-#define KB_COL3 LCD_D3
-
-#define PTT_SW   GPIOE,2
-
-#endif
+/*
+ * This function is defined in platform.h
+ */
+void platform_setBacklightLevel(uint8_t level)
+{
+    FTM1->CONTROLS[1].CnV = level;
+}

@@ -20,6 +20,7 @@
 
 #include <interfaces/platform.h>
 #include <interfaces/gpio.h>
+#include <backlight.h>
 #include <stddef.h>
 #include <UART0.h>
 #include "hwconfig.h"
@@ -29,10 +30,16 @@ void platform_init()
     /* Configure GPIOs */
     gpio_setMode(GREEN_LED, OUTPUT);
     gpio_setMode(RED_LED,   OUTPUT);
+
+    /* Initialise backlight driver */
+    backlight_init();
 }
 
 void platform_terminate()
 {
+    /* Shut down backlight */
+    backlight_terminate();
+
     gpio_clearPin(RED_LED);
     gpio_clearPin(GREEN_LED);
 
@@ -133,7 +140,8 @@ const hwInfo_t *platform_getHwInfo()
     return NULL;
 }
 
-void platform_setBacklightLevel(uint8_t level)
-{
-    /* TODO */
-}
+/*
+ * NOTE: implementation of this API function is provided in
+ * platform/drivers/backlight/backlight_HD1.c
+ */
+// void platform_setBacklightLevel(uint8_t level)
